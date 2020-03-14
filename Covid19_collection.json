@@ -1,0 +1,142 @@
+{
+	"info": {
+		"_postman_id": "ac552c82-a895-4dc2-a200-06b428cf76ae",
+		"name": "Praca",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetCovidDataPLFromGOV",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ea54170d-95ef-4ff5-acf9-cd8b1c61c27d",
+						"exec": [
+							"const $ = cheerio.load(pm.response.text())",
+							"var script = ($('pre').text().replace(\"window.__STATE__ = \",\"\"));",
+							"",
+							"var jsonData = JSON.parse(script);",
+							"var string = JSON.stringify(jsonData.data);",
+							"var strArray = string.split('\\\\r\\\\n');",
+							"var result = strArray.join(';');",
+							"",
+							"console.log(result);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://www.gov.pl/web/koronawirus/wykaz-zarazen-koronawirusem-sars-cov-2",
+					"protocol": "https",
+					"host": [
+						"www",
+						"gov",
+						"pl"
+					],
+					"path": [
+						"web",
+						"koronawirus",
+						"wykaz-zarazen-koronawirusem-sars-cov-2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetCovidDataPLFromArcGis",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b2eed471-3258-47c8-80fe-320d4eee5ee7",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"var counter = 0;",
+							"",
+							"console.log(\"Województwo,Potwierdzonych przypadków,Zmarło,Wyzdrowiało\");",
+							"",
+							"jsonData.features.forEach(function(process){",
+							"    var attr = jsonData.features[counter].attributes;",
+							"    console.log(attr.jpt_nazwa_+\",\"+attr.SUM_Confirmed+\",\"+attr.SUM_Deaths+\",\"+attr.SUM_Recovered);",
+							"    counter += 1;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://services1.arcgis.com/YmCK8KfESHdxUQgm/arcgis/rest/services/wojewodztwa_corona/FeatureServer/0/query?f=json&where=1%3D1&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=SUM_Confirmed%20desc&outSR=102100&resultOffset=0&resultRecordCount=25&cacheHint=true",
+					"protocol": "https",
+					"host": [
+						"services1",
+						"arcgis",
+						"com"
+					],
+					"path": [
+						"YmCK8KfESHdxUQgm",
+						"arcgis",
+						"rest",
+						"services",
+						"wojewodztwa_corona",
+						"FeatureServer",
+						"0",
+						"query"
+					],
+					"query": [
+						{
+							"key": "f",
+							"value": "json"
+						},
+						{
+							"key": "where",
+							"value": "1%3D1"
+						},
+						{
+							"key": "returnGeometry",
+							"value": "false"
+						},
+						{
+							"key": "spatialRel",
+							"value": "esriSpatialRelIntersects"
+						},
+						{
+							"key": "outFields",
+							"value": "*"
+						},
+						{
+							"key": "orderByFields",
+							"value": "SUM_Confirmed%20desc"
+						},
+						{
+							"key": "outSR",
+							"value": "102100"
+						},
+						{
+							"key": "resultOffset",
+							"value": "0"
+						},
+						{
+							"key": "resultRecordCount",
+							"value": "25"
+						},
+						{
+							"key": "cacheHint",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
